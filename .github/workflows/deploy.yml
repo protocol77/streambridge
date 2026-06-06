@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: Stremio/beamup-deploy-action@master
+      - uses: Stremio/beamup-deploy-action@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           BEAMUP_HOST: ${{ secrets.BEAMUP_HOST }}
