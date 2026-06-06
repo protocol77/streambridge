@@ -6,12 +6,26 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Check secret
-        run: |
-          if [ -z "$SSH_KEY" ]; then
-            echo "Secret is empty!"
-          else
-            echo "Secret length: ${#SSH_KEY}"
-          fi
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup SSH
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_beamup
+          chmod 600 ~/.ssh/id_beamup
+          cat ~/.ssh/id_beamup
+      - name: Scan BeamUp host
+        run: |
+          ssh-keyscan -p 22 baby-beamup.club >> ~/.ssh/known_hosts
+          echo "Host scanned successfully"
+      - name: Sync key with BeamUp
+        run: |
+          ssh -i ~/.ssh/id_beamup -p 22 beamup@baby-beamup.club sync
+          echo "Sync successful"
+      - name: Push to BeamUp
+        run: |
+          git remote add beamup ssh://beamup@baby-beamup.club/${{ secrets.PROJECT_NAME }}
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/id_beamup" git push beamup main:master --force
