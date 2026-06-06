@@ -1,0 +1,21 @@
+{
+  "name": "esaddon",
+  "version": "1.2.3",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "version:patch": "node scripts/bump-version.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "stremio-addon-sdk": "^1.6.10"
+  }
+}
