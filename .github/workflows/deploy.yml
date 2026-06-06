@@ -9,9 +9,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: Stremio/beamup-deploy-action@main
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          BEAMUP_HOST: ${{ secrets.BEAMUP_HOST }}
-          USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_beamup
+          chmod 600 ~/.ssh/id_beamup
+          ssh-keyscan -p 22 baby-beamup.club >> ~/.ssh/known_hosts
+      - name: Sync SSH key with BeamUp
+        run: |
+          ssh -i ~/.ssh/id_beamup -p 22 beamup@baby-beamup.club sync
+      - name: Add BeamUp remote and push
+        run: |
+          git remote add beamup ssh://beamup@baby-beamup.club/${{ secrets.PROJECT_NAME }}
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/id_beamup" git push beamup main:master --force
