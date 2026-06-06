@@ -1,10 +1,17 @@
-name: Test
+name: Deploy to BeamUp
 on:
   push:
     branches: [main]
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Hello
-        run: echo "Hello World"
+      - name: Check secret
+        run: |
+          if [ -z "$SSH_KEY" ]; then
+            echo "Secret is empty!"
+          else
+            echo "Secret length: ${#SSH_KEY}"
+          fi
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
